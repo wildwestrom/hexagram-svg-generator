@@ -1,0 +1,39 @@
+* Hexagram SVG Generator
+
+** Run
+
+   #+begin_src shell
+   yarn install
+
+   yarn watch
+   #+end_src
+** Clean
+
+   #+begin_src shell
+   yarn clean
+   #+end_src
+** Release
+
+   #+begin_src shell
+   yarn release
+   #+end_src
+
+
+** License
+   This program converts your Org Mode documents into HTML + metadata.\\
+   Copyright © 2021 Christian Westrom
+
+   This program is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the Free
+   Software Foundation, either version 3 of the License, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+   for more details.
+
+   You should have received a copy of the GNU General Public License along
+   with this program. If not, see <https://www.gnu.org/licenses/>.
+
+  [[https://www.gnu.org/graphics/gplv3-or-later.png]]
