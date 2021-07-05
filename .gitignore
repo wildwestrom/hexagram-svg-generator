@@ -9,7 +9,9 @@
 .nrepl-port
 
 /node_modules/
-public/
 yarn-error.log
+
+public/*
+!public/index.html
 
 .DS_Store
