@@ -13,5 +13,6 @@ yarn-error.log
 
 public/*
 !public/index.html
+!public/css/*
 
 .DS_Store
