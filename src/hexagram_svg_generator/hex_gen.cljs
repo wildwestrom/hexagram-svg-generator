@@ -50,20 +50,26 @@
   [line-number]
   ^{:key line-number}
   [:rect
-   {:id    (str "line-" (inc line-number) "-yang")
-    :width (:width proportions)         :height (:line-height proportions)
-    :x     (:line-offset-x proportions) :y      (:line-offset-y proportions)}])
+   {:id     (str "line-" (inc line-number) "-yang")
+    :width  (:width proportions)
+    :height (:line-height proportions)
+    :x      (:line-offset-x proportions)
+    :y      (:line-offset-y proportions)}])
 
 (defn yin
   [line-number]
   ^{:key line-number}
   [:g
-   [:rect {:id    (str "line-" (inc line-number) "-yin-left")
-           :width (:yin-line-width proportions) :height (:line-height proportions)
-           :x     (:line-offset-x proportions)  :y      (:line-offset-y proportions)}]
-   [:rect {:id    (str "line-" (inc line-number) "-yin-right")
-           :width (:yin-line-width proportions)         :height (:line-height proportions)
-           :x     (:line-offset-x-rightyin proportions) :y      (:line-offset-y proportions)}]])
+   [:rect {:id     (str "line-" (inc line-number) "-yin-left")
+           :width  (:yin-line-width proportions)
+           :height (:line-height proportions)
+           :x      (:line-offset-x proportions)
+           :y      (:line-offset-y proportions)}]
+   [:rect {:id     (str "line-" (inc line-number) "-yin-right")
+           :width  (:yin-line-width proportions)
+           :height (:line-height proportions)
+           :x      (:line-offset-x-rightyin proportions)
+           :y      (:line-offset-y proportions)}]])
 
 (defn hexagram-svg
   [hexagram-number]

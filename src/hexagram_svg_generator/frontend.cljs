@@ -72,7 +72,9 @@
      [number-input "Any number:" scale-factor]
      [:br]
      [number-input "Hexagram number (1-64):" hexagram-number]
-     [:button {:on-click #(reset! hexagram-number (inc (rand-int 64)))} "Generate Random Hexagram"]
+     [:button
+      {:on-click #(reset! hexagram-number (inc (rand-int 64)))}
+      "Generate Random Hexagram"]
      (if (valid? @hexagram-number)
        nil
        [:p {:style #js
