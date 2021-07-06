@@ -16,14 +16,11 @@
 
         :modules
         {:main
-         {:entries [hexagram-svg-generator.frontend]}}
+         {:init-fn hexagram-svg-generator.frontend/init}}
 
         :devtools
-        ;; before live-reloading any code call this function
         {:before-load hexagram-svg-generator.frontend/stop
-         ;; after live-reloading finishes call this function
          :after-load  hexagram-svg-generator.frontend/start
-         ;; serve the public directory over http at port 8700
          :http-root   "public"
          :http-port   8700
          :preloads    [devtools.preload]}
