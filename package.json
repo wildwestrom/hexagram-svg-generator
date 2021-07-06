@@ -1,10 +1,10 @@
 {
     "scripts": {
         "deps": "yarn install",
-        "build:css": "export NODE_ENV=production && postcss src/css/main.css -o public/css/main.css",
+        "build:css": "clojure -X:girouette '{:watch? false}'",
         "build:app": "shadow-cljs release app",
         "release": "run-s build:css build:app;",
-        "watch:css": "postcss src/css/main.css -o public/css/main.css --watch",
+        "watch:css": "clojure -X:girouette",
         "watch:app": "shadow-cljs watch app",
         "watch": "run-p watch:css watch:app",
         "clean": "rm -rf public/js/compiled"
