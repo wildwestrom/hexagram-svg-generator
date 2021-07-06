@@ -1,5 +1,9 @@
 * Hexagram SVG Generator
 
+  It generates an svg image of a hexagram.
+
+  The original proportions are based off of the images for the hexagrams on Wikipedia. For example: [[https://upload.wikimedia.org/wikipedia/commons/2/2b/Iching-hexagram-63.svg][Hexagram 63]].
+
 ** Run
 
    #+begin_src shell
@@ -18,6 +22,10 @@
    yarn release
    #+end_src
 
+
+** Problems
+
+   Most of the frontend was hacked together with inline css.
 
 ** License
    This program converts your Org Mode documents into HTML + metadata.\\

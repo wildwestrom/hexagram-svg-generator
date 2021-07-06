@@ -78,15 +78,16 @@
                 (nth (map int (seq (hexagram-bin num))) n))]
     [:svg {:id                  (hexagram-id num)
            :viewBox             (string/join
-                      " "
-                      [(:min-x proportions)
-                       (:min-y proportions)
-                       (:width proportions)
-                       (:height proportions)])
+                                  " "
+                                  [(:min-x proportions)
+                                   (:min-y proportions)
+                                   (:width proportions)
+                                   (:height proportions)])
            :preserveAspectRatio "xMidYMid meet"
            :version             "1.1"
            :xmlns               "http://www.w3.org/2000/svg"
-           :class               "hexagram"}
+           :class               "hexagram"
+           :style               #js {:fill "currentColor"}}
      [:g {:id "g-hexagram"}
       (for [line-num (range 6)]
         ^{:key (str "g-line-" (inc line-num))}
