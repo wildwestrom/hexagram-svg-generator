@@ -1,17 +1,17 @@
 (ns hexagram-svg-generator.frontend
   (:require
-   [reagent.core :as reagent :refer [atom]]
+   [reagent.core :as reagent]
    [reagent.dom :as r.dom]
    [hexagram-svg-generator.hex-gen :as hex-gen]))
 
 (defonce hexagram-number
-  (atom "1"))
+  (reagent/atom "1"))
 
 (defonce last-valid-number
-  (atom "1"))
+  (reagent/atom "1"))
 
 (defonce scale-factor
-  (atom "5"))
+  (reagent/atom "5"))
 
 (defn valid? [num]
   (and (<= 1 num)
@@ -35,7 +35,7 @@
 (defn sm? [window-width] (<= window-width 640))
 
 (def window-width
-  (atom js/window.innerWidth))
+  (reagent/atom js/window.innerWidth))
 
 (defn icon
   []
