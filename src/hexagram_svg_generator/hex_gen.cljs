@@ -20,24 +20,31 @@
 (defn hexagram-name [num]
   (:name (current-hexagram num)))
 
-(def proportions
-  (let [canvas                     33
-        min-x                      0
-        min-y                      0
-        width                      canvas
+(def default-proportions
+  (atom {:canvas  35
+         :padding 2}))
+
+(defn proportions
+  [& {:keys [canvas padding gap-constant]
+      :or   {canvas       33
+             padding      0
+             gap-constant 6.6}}]
+  (let [width                      canvas
         height                     canvas
-        line-height                (/ height 11)
+        hex-width                  (- canvas padding)
+        hex-height                 (- canvas padding)
+        line-height                (/ hex-height 11)
         vertical-gap-between-lines (* 2 line-height)
-        yin-line-gap               (/ width 6.6)
-        line-offset-x              min-x
-        yin-line-width             (- (/ width 2)
+        yin-line-gap               (/ hex-width gap-constant)
+        line-offset-x              (/ padding 2)
+        yin-line-width             (- (/ hex-width 2)
                                       (/ yin-line-gap 2))
-        line-offset-x-rightyin     (+ yin-line-width yin-line-gap)
-        line-offset-y              (- width line-height)]
-    {:min-x                      min-x
-     :min-y                      min-y
-     :width                      width
+        line-offset-x-rightyin     (+ (/ padding 2) yin-line-width yin-line-gap)
+        line-offset-y              (- (- width (/ padding 2)) line-height)]
+    {:width                      width
      :height                     height
+     :hex-width                  hex-width
+     :hex-height                 hex-height
      :line-height                line-height
      :vertical-gap-between-lines vertical-gap-between-lines
      :yin-line-gap               yin-line-gap
@@ -49,40 +56,46 @@
 (defn yang
   [line-number]
   ^{:key line-number}
-  [:rect
-   {:id     (str "line-" (inc line-number) "-yang")
-    :width  (:width proportions)
-    :height (:line-height proportions)
-    :x      (:line-offset-x proportions)
-    :y      (:line-offset-y proportions)}])
+  (let [{:keys [hex-width line-height
+                line-offset-x
+                line-offset-y]} (proportions)]
+    [:rect
+     {:id     (str "line-" (inc line-number) "-yang")
+      :width  hex-width
+      :height line-height
+      :x      line-offset-x
+      :y      line-offset-y}]))
 
 (defn yin
   [line-number]
   ^{:key line-number}
-  [:g
-   [:rect {:id     (str "line-" (inc line-number) "-yin-left")
-           :width  (:yin-line-width proportions)
-           :height (:line-height proportions)
-           :x      (:line-offset-x proportions)
-           :y      (:line-offset-y proportions)}]
-   [:rect {:id     (str "line-" (inc line-number) "-yin-right")
-           :width  (:yin-line-width proportions)
-           :height (:line-height proportions)
-           :x      (:line-offset-x-rightyin proportions)
-           :y      (:line-offset-y proportions)}]])
+  (let [{:keys [yin-line-width line-height
+                line-offset-x line-offset-y
+                line-offset-x-rightyin]} (proportions)]
+    [:g
+     [:rect {:id     (str "line-" (inc line-number) "-yin-left")
+             :width  yin-line-width
+             :height line-height
+             :x      line-offset-x
+             :y      line-offset-y}]
+     [:rect {:id     (str "line-" (inc line-number) "-yin-right")
+             :width  yin-line-width
+             :height line-height
+             :x      line-offset-x-rightyin
+             :y      line-offset-y}]]))
 
-(defn hexagram-svg
+(defn generate-svg
   [hexagram-number]
   (let [num   hexagram-number
         lines (for [n (range 6)]
-                (nth (map int (seq (hexagram-bin num))) n))]
+                (nth (map int (seq (hexagram-bin num))) n))
+
+        {:keys [width height
+                vertical-gap-between-lines]} (proportions)]
     [:svg {:id                  (hexagram-id num)
            :viewBox             (string/join
                                   " "
-                                  [(:min-x proportions)
-                                   (:min-y proportions)
-                                   (:width proportions)
-                                   (:height proportions)])
+                                  [0 0 width height])
            :preserveAspectRatio "xMidYMid meet"
            :version             "1.1"
            :xmlns               "http://www.w3.org/2000/svg"
@@ -94,7 +107,7 @@
         [:g {:id        (str "g-line-" (inc line-num))
              :transform (str "translate(0,"
                              (* line-num
-                                (- (:vertical-gap-between-lines proportions)))
+                                (- vertical-gap-between-lines))
                              ")")}
          (condp = (nth lines line-num)
            0 (yin line-num)

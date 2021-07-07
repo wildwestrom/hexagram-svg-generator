@@ -2,7 +2,7 @@
   (:require
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as r.dom]
-   [hexagram-svg-generator.hex-gen :as hex-gen :refer [hexagram-svg]]))
+   [hexagram-svg-generator.hex-gen :as hex-gen]))
 
 (defonce hexagram-number
   (atom "1"))
@@ -11,68 +11,42 @@
   (atom "1"))
 
 (defonce scale-factor
-  (atom "7"))
+  (atom "5"))
 
 (defn valid? [num]
   (and (<= 1 num)
        (>= 64 num)
        (not (nil? num))))
 
-(defn scale-slider
-  [min max step]
-  [:div (str
-          (cond
-            (int? step)   "Integer"
-            (float? step) "Float"
-            :else         (str "Step is of type: " (type step)))
-          " " min "-" max ": ")
-   [:br]
-   [:input {:type      "range"
-            :min       min
-            :max       max
-            :step      step
-            :value     @scale-factor
-            :on-change #(reset! scale-factor (-> % .-target .-value))}]])
-
-(def step "fuckerfuck")
-
-(defn number-input
-  [title atom]
-  [:div
-   [:p {:class ["pb-1" ]} title]
-   [:input {:type      "text"
-            :value     @atom
-            :on-change #(reset! atom (-> % .-target .-value))
-            :class     ["dark:text-black"
-                        "border-current" "border"
-                        "filter" "drop-shadow-lg"
-                        "rounded-md" "p-2"]}]])
-
 (defn svg-container
-  [hexagram-number]
+  [hexagram-number & {:keys [scale-factor]}]
   [:div {:id    "svg-container"
-         :class ["m-4" "justify-self-center" "sm:justify-self-start"]
+         :class ["m-4"
+                 "justify-self-center"
+                 "sm:justify-self-start"]
          :style
-         {:width (* @scale-factor 33)}}
-   (hexagram-svg hexagram-number)])
+         {:width (* scale-factor 33)}}
+   (hex-gen/generate-svg hexagram-number)])
 
-(defn hexagram-info
-  [hexagram-number]
-  [:div {:class ["text-2xl"
-                 "border-solid"
-                 "border-current"
-                 "border-2"
-                 "p-8" "pb-2"]}
-   [:h2 {:class ["text-4xl" "font-bold"]}
-    "Hexagram " [:br {:class ["sm:hidden"]}] (str "#" hexagram-number)]
-   [:h3
-    (str (hex-gen/hexagram-name hexagram-number))]
-   [:br]
-   [:h3 (str "Binary Representation: ")]
-   [:p {:class "font-mono"}
-    (hex-gen/hexagram-bin hexagram-number)]
-   [svg-container hexagram-number]])
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Begin Icon Component
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn sm? [window-width] (<= window-width 640))
+
+(def window-width
+  (atom js/window.innerWidth))
+
+(defn icon
+  []
+  (cond
+    (sm? @window-width)       [svg-container @hexagram-number
+                               :scale-factor 1]
+    (not (sm? @window-width)) "☯"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; End Icon Component
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn titlebar
   []
@@ -82,53 +56,123 @@
                  "p-8"]}
    [:h1 {:class ["min-w-min"]}
     "I-ching Hexagram Generator"]
-   [:h1 {:class ["text-5xl"
-                 "font-mono"
-                 "pl-2"]}
-    "☯"]])
+   [:div {:class ["text-5xl"
+                  "font-mono"
+                  "pl-2"]}
+    (set! (.-onresize js/window)
+          #(reset! window-width js/window.innerWidth))
+    [icon]]])
 
+;; (js/console.log (js/screen.width))
+
+;; (.width (.querySelector js/document "body"))
+
+
+
+(defn scale-slider
+  [min max step]
+  [:div (str (cond
+               (int? step)   "Integer"
+               (float? step) "Float"
+               :else         (str "Step is of type: " (type step)))
+             " " min "-" max ": ")
+   [:br]
+   [:input {:type      "range"
+            :min       min
+            :max       max
+            :step      step
+            :value     @scale-factor
+            :on-change #(reset! scale-factor (-> % .-target .-value))
+            :class     ["min-w-full"]}]])
+
+(defn number-input
+  [title atom rejection-message]
+  [:div
+   [:p {:class ["pb-1"]} title]
+   [:input {:type        "text"
+            :placeholder "Whole number from 1-64."
+            :value       @atom
+            :on-change   #(reset! atom (-> % .-target .-value))
+            :class       ["dark:text-black"
+                          "border-current" "border"
+                          "min-w-full"
+                          "filter" "drop-shadow-lg"
+                          "rounded-md" "p-1" "mb-2"]}]
+   rejection-message])
+
+(defn random-hexagram-button
+  []
+  [:button
+   {:class    ["border-current" "border"
+               "p-2" "my-2"
+               "filter" "drop-shadow-lg"
+               "min-w-full"
+               "rounded-md" "bg-blue-200"
+               "dark:bg-blue-600"]
+    :on-click #(reset! hexagram-number (inc (rand-int 64)))}
+   "Generate Random Hexagram"])
+
+(defn hexagram-info-box
+  [hexagram-number]
+  [:div {:class ["text-2xl"
+                 "border-solid"
+                 "border-current"
+                 "border-2"
+                 "p-8" "pb-2" "min-w-60"]}
+   [:h2 {:class ["text-4xl" "font-bold"]}
+    (str "Hexagram #" hexagram-number)]
+   [:h3
+    (str (hex-gen/hexagram-name hexagram-number))]
+   [:br]
+   [:h3 (str "Binary Representation: ")]
+   [:p {:class "font-mono"}
+    (hex-gen/hexagram-bin hexagram-number)]
+   [svg-container hexagram-number :scale-factor @scale-factor]])
+
+(defn control-panel
+  []
+  [:div {:class ["sm:place-self-start"
+                 "sm:w-1/3"
+                 "place-self-center"
+                 "min-w-full"]}
+   [:h3 {:class ["text-2xl"]}
+    "Hexagram Number:"]
+   [number-input "" hexagram-number
+    ;;
+    [:p {:class [(if (valid? @hexagram-number)
+                   "hidden" nil)
+                 "text-red-500" "p-2"
+                 "border-2" "border-red-700"]}
+     "Invalid input:"
+     [:br]
+     "Please put in a number from 1-64."]]
+
+   [random-hexagram-button]
+   [:h3 {:class ["text-2xl"]}
+    "Scale factor:"]
+   [number-input "" scale-factor nil]
+   [scale-slider 1 100 1]
+   [scale-slider 0 10 1e-3]])
 
 (defn ui []
   [:div {:class ["dark:text-gray-200"]}
    [titlebar]
    [:div {:class ["grid"
-                  "justify-center"
                   "sm:justify-start"
                   "sm:grid-flow-col"
+                  "w-screen"
+                  "gap-8" "px-8"
                   "grid-flow-row"]}
-    [:div {:class ["sm:pl-8" "sm:pr-4"
-                   "px-8"]}
-     [:h3 {:class ["text-2xl"]}
-      "Scale factor:"]
-     [number-input "Any number:" scale-factor]
-     [:br]
-     [scale-slider 1 100 1]
-     [scale-slider 0 10 1e-3]
-     [number-input "Hexagram number (1-64):" hexagram-number]
-     [:button
-      {:class ["border-current" "border"
-               "p-2" "my-4"
-               "w-48"
-               "rounded-md" "bg-blue-300"
-               "dark:bg-blue-600"]
-       :on-click #(reset! hexagram-number (inc (rand-int 64)))}
-      "Generate Random Hexagram"]
-
-     (if (valid? @hexagram-number)
-       nil
-       [:p {:class ["text-red-500" "p-2"
-                    "border-2" "border-red-700"]}
-        "Invalid input:"
-        [:br]
-        "Please put in a number from 1-64."])]
-
-    [:div {:class ["pl-4" "pr-8"]}
+    [control-panel]
+    [:div {:class ["sm:pr-8"
+                   "min-w-2/3"
+                   ;; "place-self-stretch"
+                   ]}
      (if (valid? @hexagram-number)
        (do (reset! last-valid-number @hexagram-number)
-           (hexagram-info @hexagram-number))
-       (hexagram-info @last-valid-number))]]])
+           (hexagram-info-box @hexagram-number))
+       (hexagram-info-box @last-valid-number))]]])
 
-;; This is super hacky but it works
 (defn set-body-styles []
   (let [body js/document.body]
     (.add (.-classList body) "dark:bg-gray-900")))
