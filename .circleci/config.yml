@@ -26,7 +26,6 @@ commands:
           name: Build
           command: |
             yarn deps
-            yarn upgrade
             yarn release
 
       - save_cache:
@@ -41,49 +40,7 @@ commands:
           key: v1-dependencies-node-{{ checksum "yarn.lock" }}
 
 jobs:
-  test:
-    docker:
-      - image: circleci/clojure:tools-deps-node
-
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          name: Restore clojure dependency cache
-          keys:
-            - v1-dependencies-clj-{{ checksum "deps.edn" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-clj-
-      - restore_cache:
-          name: Restore node dependency cache
-          keys:
-            - v1-dependencies-node-{{ checksum "yarn.lock" }}
-            - v1-dependencies-node-
-
-      # install dependencies
-      - run: yarn deps
-      # test
-      - run: yarn test
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-clj-{{ checksum "deps.edn" }}
-
-      - save_cache:
-          paths:
-            - ~/.cache/yarn
-            - ~/repo/node_modules
-          key: v1-dependencies-node-{{ checksum "yarn.lock" }}
-
-  build:
+  stage:
     docker:
       - image: circleci/clojure:tools-deps-node
     steps:
@@ -99,19 +56,15 @@ jobs:
       - run:
           name: Netlify Deploy
           command: ./node_modules/.bin/netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --prod --dir=public
+
 workflows:
-  test-deploy:
+  build-and-deploy:
     jobs:
-      - test
-      - build:
-          requires:
-            - test
+      - stage:
           filters:
             branches:
               ignore: main
       - deploy:
-          requires:
-            - test
           filters:
             branches:
               only: main
