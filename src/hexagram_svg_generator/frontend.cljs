@@ -63,12 +63,6 @@
           #(reset! window-width js/window.innerWidth))
     [icon]]])
 
-;; (js/console.log (js/screen.width))
-
-;; (.width (.querySelector js/document "body"))
-
-
-
 (defn scale-slider
   [min max step]
   [:div (str (cond

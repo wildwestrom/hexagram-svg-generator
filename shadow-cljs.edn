@@ -18,5 +18,4 @@
          :after-load  hexagram-svg-generator.frontend/start
          :http-root   "public"
          :http-port   8700
-         :preloads    [devtools.preload]}
-        }}}
+         :preloads    [devtools.preload]}}}}

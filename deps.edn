@@ -1,21 +1,21 @@
 {:paths ["src"]
 
- :deps {org.clojure/clojurescript {:mvn/version "1.10.866"}
-        thheller/shadow-cljs      {:mvn/version "2.14.6"}
+ :deps {org.clojure/clojurescript {:mvn/version "1.10.879"}
+        thheller/shadow-cljs      {:mvn/version "2.15.9"}
         binaryage/devtools        {:mvn/version "1.0.3"}
         cider/cider-nrepl         {:mvn/version "0.26.0"}
         reagent/reagent           {:mvn/version "1.1.0"}
-        girouette/girouette       {:mvn/version "0.0.3"}}
+        girouette/girouette       {:mvn/version "0.0.5"}
+        cljs-node-io/cljs-node-io {:mvn/version "1.1.2"}}
 
  :aliases {; clojure -X:girouette
-           :girouette {:extra-deps {girouette/processor {:mvn/version "0.0.2"}}
+           :girouette {:extra-deps {girouette/processor {:mvn/version "0.0.5"}}
                        :ns-default girouette.processor
                        :exec-fn    process
-                       :exec-args  {:css           {:output-file "public/css/girouette.css"}
+                       :exec-args  {:css    {:output-file "public/css/girouette.css"}
                                     ;; :garden-fn     acme.frontend.my-grammar/class-name->garden
                                     ;; :apply-classes acme.frontend.my-css/composed-classes
-                                    :watch?        true}}
+                                    :watch? true}}
 
-; clojure -M:outdated --upgrade
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.15.3"}}
-                      :main-opts  ["-m" "antq.core"]}}}
+           :upgrade {:extra-deps {com.github.liquidz/antq {:mvn/version "1.0.0"}}
+                      :main-opts  ["-m" "antq.core" "--upgrade"]}}}
