@@ -39,7 +39,8 @@ commands:
             - ~/repo/node_modules
           key: v1-dependencies-node-{{ checksum "yarn.lock" }}
 
-  build:
+jobs:
+  stage:
     docker:
       - image: circleci/clojure:tools-deps-node
     steps:
@@ -57,9 +58,9 @@ commands:
           command: ./node_modules/.bin/netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --prod --dir=public
 
 workflows:
-  deploy:
+  build-and-deploy:
     jobs:
-      - build:
+      - stage:
           filters:
             branches:
               ignore: main
