@@ -1,5 +1,4 @@
 * Hexagram SVG Generator
-
   It generates an svg image of a hexagram.
 
   The original proportions are based off of the images for the hexagrams on Wikipedia. For example: [[https://upload.wikimedia.org/wikipedia/commons/2/2b/Iching-hexagram-63.svg][Hexagram 63]].
@@ -27,7 +26,7 @@
    Most of the frontend was hacked together with inline css.
 
 ** License
-   This program converts your Org Mode documents into HTML + metadata.\\
+   Hexagram SVG Generator\\
    Copyright © 2021 Christian Westrom
 
    This program is free software: you can redistribute it and/or modify it
